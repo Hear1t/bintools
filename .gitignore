@@ -39,6 +39,15 @@ release/
 .DS_Store
 Thumbs.db
 
+# 参考图 / 截图
+*.png
+*.jpg
+*.jpeg
+!src/**/*.png
+!src/**/*.jpg
+!docs/**/*.png
+!docs/**/*.jpg
+
 # 测试覆盖率
 coverage/
 .nyc_output/
