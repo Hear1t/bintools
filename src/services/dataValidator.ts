@@ -82,9 +82,23 @@ export function validateSheet(
   const dataRows = rows.slice(1)
   const colCount = header.length
 
+  // Detect optional Taxonomy column immediately after the gene column
+  let taxonomyColumnIndex: number | undefined = undefined
+  const nextCol = geneColumnIndex + 1
+  if (nextCol < colCount) {
+    const headerCell = String(header[nextCol] ?? '').toLowerCase()
+    if (
+      headerCell.includes('taxonomy') ||
+      headerCell.includes('taxon') ||
+      headerCell.includes('lineage')
+    ) {
+      taxonomyColumnIndex = nextCol
+    }
+  }
+
   const sampleIndices: number[] = []
   for (let c = 0; c < colCount; c++) {
-    if (c !== geneColumnIndex) sampleIndices.push(c)
+    if (c !== geneColumnIndex && c !== taxonomyColumnIndex) sampleIndices.push(c)
   }
 
   if (sampleIndices.length === 0) {
@@ -94,6 +108,7 @@ export function validateSheet(
   const sampleIds = sampleIndices.map((c) => String(header[c] ?? `Sample_${c + 1}`))
 
   const rawGeneIds: string[] = []
+  const rawTaxonLabels: string[] = []
   const matrix: number[][] = []
   let missingCount = 0
   let totalCells = 0
@@ -118,6 +133,9 @@ export function validateSheet(
     totalCells += values.length
     rawGeneIds.push(String(rawGene).trim())
     matrix.push(values)
+    if (taxonomyColumnIndex !== undefined) {
+      rawTaxonLabels.push(String(row[taxonomyColumnIndex] ?? '').trim())
+    }
   }
 
   if (matrix.length === 0) {
@@ -142,6 +160,10 @@ export function validateSheet(
     warnings.push({ type: 'zero_rows_skipped', count: skippedRows })
   }
 
+  // taxonLabels must be remapped to match deduplicated geneIds order
+  // dedupeGeneIds preserves all entries (just renames dups), so indices stay aligned
+  const taxonLabels = rawTaxonLabels.length > 0 ? rawTaxonLabels : undefined
+
   const dataset: BinToolsDataset = {
     geneIds,
     sampleIds,
@@ -150,6 +172,7 @@ export function validateSheet(
     totalCells,
     duplicateGeneIds: duplicates,
     skippedRows,
+    taxonLabels,
   }
 
   return { ok: true, dataset, warnings, geneColumnIndex }

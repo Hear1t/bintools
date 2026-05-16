@@ -6,6 +6,7 @@ export interface BinToolsDataset {
   totalCells: number
   duplicateGeneIds: string[]
   skippedRows: number
+  taxonLabels?: string[]
 }
 
 export type ValidationWarning =
