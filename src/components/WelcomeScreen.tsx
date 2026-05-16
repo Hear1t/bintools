@@ -4,6 +4,7 @@ import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { Logo } from '@/components/Logo'
 import { exampleDatasets } from '@/data/examples'
+import { phyloExamples } from '@/data/examples/phyloDemo'
 import { loadExcelFromUpload, loadFastaFromUpload } from '@/services/fileLoader'
 import { parseFasta, validateSequences } from '@/services/fastaParser'
 import { usePhyloStore } from '@/store/phyloStore'
@@ -377,6 +378,53 @@ export function WelcomeScreen({ onLoadedExcel, onLoadedPhylo }: WelcomeScreenPro
                   </div>
                   <div className="font-mono text-[10px] uppercase tracking-wider text-ink-faint shrink-0 ml-4">
                     {ds.shape}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {isPhylo && (
+          <div className="border border-line bg-cream-50/60 p-8">
+            <div className="flex items-center justify-between mb-5">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-ink-subtle">
+                [ EXAMPLES ]
+              </div>
+              <div className="font-mono text-[10px] text-ink-faint">
+                {phyloExamples.length} AVAILABLE
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-2">
+              {phyloExamples.map((ex, idx) => (
+                <button
+                  key={ex.id}
+                  onClick={() => {
+                    const seqs = parseFasta(ex.fasta)
+                    proceedPhylo(`${ex.title}.fasta`, seqs)
+                  }}
+                  className={cn(
+                    'group flex items-center justify-between',
+                    'border border-line bg-cream px-5 py-4',
+                    'hover:border-terracotta/40 hover:bg-cream-50',
+                    'transition-colors text-left',
+                  )}
+                >
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <span className="font-mono text-[10px] text-ink-faint group-hover:text-terracotta/70 transition-colors shrink-0">
+                      {String(idx + 1).padStart(2, '0')}
+                    </span>
+                    <div className="min-w-0">
+                      <div className="font-mono text-sm text-ink group-hover:text-terracotta transition-colors">
+                        {ex.title}
+                      </div>
+                      <div className="text-xs text-ink-subtle mt-0.5">
+                        {ex.description}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="font-mono text-[10px] uppercase tracking-wider text-ink-faint shrink-0 ml-4">
+                    {ex.shape}
                   </div>
                 </button>
               ))}
