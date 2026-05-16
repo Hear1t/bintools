@@ -10,9 +10,11 @@ pnpm-debug.log*
 
 # 构建产物
 dist/
+dist-electron/
 build/
 out/
 release/
+*.tsbuildinfo
 
 # Electron 打包
 *.exe
