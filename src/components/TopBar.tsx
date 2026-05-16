@@ -1,6 +1,7 @@
 import { ArrowLeft } from 'lucide-react'
 import { ExportMenu } from '@/components/ExportMenu'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { Logo } from '@/components/Logo'
 import { cn } from '@/lib/cn'
 
 type ActiveTab = 'heatmap' | 'network'
@@ -43,7 +44,8 @@ export function TopBar({ getPlotElement, activeTab, onBackHome }: TopBarProps) {
         [ HOME ]
       </button>
 
-      <div className="font-mono text-[12px] tracking-wider flex items-center gap-2">
+      <div className="font-mono text-[12px] tracking-wider flex items-center gap-2.5">
+        <Logo size={18} />
         <span className="text-ink-subtle">BINTOOLS</span>
         <span className="text-ink-faint">/</span>
         <span className="text-terracotta">{TAB_LABEL[activeTab]}</span>

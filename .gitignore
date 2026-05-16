@@ -11,7 +11,10 @@ pnpm-debug.log*
 # 构建产物
 dist/
 dist-electron/
-build/
+build/*
+!build/icon.png
+!build/icon.icns
+!build/icon.ico
 out/
 release/
 *.tsbuildinfo

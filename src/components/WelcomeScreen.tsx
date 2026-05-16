@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Upload, ArrowLeft, LayoutGrid, Share2 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { Logo } from '@/components/Logo'
 import { exampleDatasets } from '@/data/examples'
 import { loadExcelFromUpload } from '@/services/fileLoader'
 import { useUiStore } from '@/store/uiStore'
@@ -96,8 +97,8 @@ export function WelcomeScreen({ onLoaded }: WelcomeScreenProps) {
 
         {/* Top status bar */}
         <div className="border-b border-line/70 px-6 py-3 flex items-center justify-between font-mono text-[11px] uppercase tracking-wider text-ink-subtle relative">
-          <div className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-terracotta animate-pulse" />
+          <div className="flex items-center gap-2.5">
+            <Logo size={16} />
             <span>BinTools v0.0.1</span>
             <span className="text-ink-faint">·</span>
             <span>Local Runtime</span>
@@ -112,6 +113,7 @@ export function WelcomeScreen({ onLoaded }: WelcomeScreenProps) {
         {/* Main hero */}
         <div className="px-10 py-20 max-w-3xl mx-auto relative">
           <div className="mb-16">
+            <Logo size={72} className="mb-7 shadow-2xl" />
             <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-ink-subtle mb-5">
               [ BIO ANALYSIS TOOLKIT ]
             </div>
@@ -210,13 +212,12 @@ export function WelcomeScreen({ onLoaded }: WelcomeScreenProps) {
           <ArrowLeft className="h-3 w-3 transition-transform group-hover:-translate-x-0.5" strokeWidth={2} />
           [ BACK ]
         </button>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-ink-faint">MODULE</span>
-            <span className="text-terracotta">{currentFeature.title}</span>
-          </div>
-          <ThemeToggle size="sm" />
+        <div className="flex items-center gap-2.5">
+          <Logo size={14} />
+          <span className="text-ink-faint">MODULE</span>
+          <span className="text-terracotta">{currentFeature.title}</span>
         </div>
+        <ThemeToggle size="sm" />
       </div>
 
       <div className="px-10 py-20 max-w-3xl mx-auto relative">
