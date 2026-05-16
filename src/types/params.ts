@@ -45,7 +45,7 @@ export const DEFAULT_PARAMS: HeatmapParams = {
   showColNames: true,
   rowFontSize: 10,
   colFontSize: 10,
-  cellBorder: 'none',
+  cellBorder: 'thin',
   width: 800,
   height: 600,
   fitWindow: true,
