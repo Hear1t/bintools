@@ -1,14 +1,16 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, type RefObject } from 'react'
 import Plotly from 'plotly.js-dist-min'
 import { useProcessedData } from '@/hooks/useProcessedData'
 import { useAppStore } from '@/store/appStore'
 import { buildHeatmapFigure } from '@/services/plotlyConfig'
 
-export function HeatmapCanvas() {
+interface HeatmapCanvasProps {
+  plotRef: RefObject<HTMLDivElement>
+}
+
+export function HeatmapCanvas({ plotRef }: HeatmapCanvasProps) {
   const processed = useProcessedData()
   const params = useAppStore((s) => s.params)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const plotRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const el = plotRef.current
@@ -20,7 +22,7 @@ export function HeatmapCanvas() {
     return () => {
       Plotly.purge(el)
     }
-  }, [processed, params])
+  }, [processed, params, plotRef])
 
   useEffect(() => {
     if (!params.fitWindow) return
@@ -29,7 +31,7 @@ export function HeatmapCanvas() {
     }
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [params.fitWindow])
+  }, [params.fitWindow, plotRef])
 
   if (!processed) {
     return (
@@ -42,7 +44,7 @@ export function HeatmapCanvas() {
   }
 
   return (
-    <main ref={containerRef} className="flex-1 overflow-auto bg-cream-100 relative">
+    <main className="flex-1 overflow-auto bg-cream-100 relative">
       {processed.warning && (
         <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 rounded-md bg-amber-50 border border-amber-200 px-4 py-2 text-sm text-amber-900 shadow-sm">
           {processed.warning}

@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import path from 'node:path'
-import { readFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -38,9 +38,7 @@ ipcMain.handle('dialog:openExcel', async () => {
   const result = await dialog.showOpenDialog(mainWindow, {
     title: '选择 Excel 文件',
     properties: ['openFile'],
-    filters: [
-      { name: 'Excel 表格', extensions: ['xlsx', 'xls'] },
-    ],
+    filters: [{ name: 'Excel 表格', extensions: ['xlsx', 'xls'] }],
   })
   if (result.canceled || result.filePaths.length === 0) return null
   const filePath = result.filePaths[0]
@@ -51,6 +49,42 @@ ipcMain.handle('dialog:openExcel', async () => {
     bytes: new Uint8Array(buffer),
   }
 })
+
+interface SaveDialogArgs {
+  defaultName: string
+  filterName: string
+  extensions: string[]
+}
+
+ipcMain.handle(
+  'dialog:saveFile',
+  async (_event, args: SaveDialogArgs): Promise<string | null> => {
+    if (!mainWindow) return null
+    const result = await dialog.showSaveDialog(mainWindow, {
+      defaultPath: args.defaultName,
+      filters: [{ name: args.filterName, extensions: args.extensions }],
+    })
+    if (result.canceled || !result.filePath) return null
+    return result.filePath
+  },
+)
+
+interface WriteFileArgs {
+  filePath: string
+  bytes: Uint8Array
+}
+
+ipcMain.handle(
+  'file:write',
+  async (_event, args: WriteFileArgs): Promise<{ ok: boolean; error?: string }> => {
+    try {
+      await writeFile(args.filePath, Buffer.from(args.bytes))
+      return { ok: true }
+    } catch (e) {
+      return { ok: false, error: e instanceof Error ? e.message : String(e) }
+    }
+  },
+)
 
 app.whenReady().then(createWindow)
 
