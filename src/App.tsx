@@ -8,10 +8,12 @@ import { useAppStore } from '@/store/appStore'
 import type { ParsedFile } from '@/types/sheet'
 import type { ValidationResult } from '@/types/data'
 
+type Feature = 'heatmap' | 'network'
+
 type View =
   | { type: 'welcome' }
-  | { type: 'preview'; file: ParsedFile; sheetIndex: number }
-  | { type: 'main' }
+  | { type: 'preview'; file: ParsedFile; sheetIndex: number; feature: Feature }
+  | { type: 'main'; feature: Feature }
 
 export default function App() {
   const [view, setView] = useState<View>({ type: 'welcome' })
@@ -27,8 +29,8 @@ export default function App() {
   if (view.type === 'welcome') {
     content = (
       <WelcomeScreen
-        onLoaded={(file) =>
-          setView({ type: 'preview', file, sheetIndex: 0 })
+        onLoaded={(file, feature) =>
+          setView({ type: 'preview', file, sheetIndex: 0, feature })
         }
       />
     )
@@ -40,13 +42,13 @@ export default function App() {
         onSheetChange={(i) => setView({ ...view, sheetIndex: i })}
         onConfirm={(result: Extract<ValidationResult, { ok: true }>) => {
           setDataset(result.dataset, view.file.fileName)
-          setView({ type: 'main' })
+          setView({ type: 'main', feature: view.feature })
         }}
         onCancel={() => setView({ type: 'welcome' })}
       />
     )
   } else {
-    content = <MainLayout onReupload={reupload} />
+    content = <MainLayout onReupload={reupload} initialTab={view.feature} />
   }
 
   return (
