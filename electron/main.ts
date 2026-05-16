@@ -18,7 +18,7 @@ function createWindow() {
     minWidth: 900,
     minHeight: 600,
     title: 'BinTools',
-    backgroundColor: '#FAF9F5',
+    backgroundColor: '#0A0A0A',
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
       contextIsolation: true,

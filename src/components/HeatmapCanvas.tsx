@@ -46,7 +46,7 @@ export function HeatmapCanvas({ plotRef }: HeatmapCanvasProps) {
   return (
     <main className="flex-1 overflow-auto bg-cream-100 relative">
       {processed.warning && (
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 rounded-md bg-amber-50 border border-amber-200 px-4 py-2 text-sm text-amber-900 shadow-sm">
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 rounded-md bg-amber-500/10 border border-amber-500/30 px-4 py-2 text-sm text-amber-300 backdrop-blur-sm">
           {processed.warning}
         </div>
       )}

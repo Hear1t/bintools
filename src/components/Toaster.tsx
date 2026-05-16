@@ -3,8 +3,8 @@ import { useUiStore, type ToastTone } from '@/store/uiStore'
 import { cn } from '@/lib/cn'
 
 const toneStyles: Record<ToastTone, string> = {
-  success: 'bg-emerald-50 text-emerald-900 border-emerald-200',
-  error: 'bg-red-50 text-red-900 border-red-200',
+  success: 'bg-cream-50 text-emerald-400 border-emerald-500/40',
+  error: 'bg-cream-50 text-red-400 border-red-500/40',
   info: 'bg-cream-50 text-ink border-line',
 }
 

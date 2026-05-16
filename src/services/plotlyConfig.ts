@@ -75,7 +75,7 @@ export function buildHeatmapFigure(
         thickness: 12,
         len: 0.7,
         outlinewidth: 0,
-        tickfont: { family: 'Inter', size: 10, color: '#6B6660' },
+        tickfont: { family: 'Inter', size: 10, color: '#71717A' },
       },
     },
   ]
@@ -85,9 +85,9 @@ export function buildHeatmapFigure(
     width: params.fitWindow ? undefined : params.width,
     height: params.fitWindow ? undefined : params.height,
     margin: { l: 90, r: 60, t: 30, b: 90 },
-    paper_bgcolor: '#FAF9F5',
-    plot_bgcolor: '#FAF9F5',
-    font: { family: 'Inter', color: '#2D2A26' },
+    paper_bgcolor: '#0A0A0A',
+    plot_bgcolor: '#0A0A0A',
+    font: { family: 'Inter', color: '#A1A1AA' },
     xaxis: {
       showgrid: false,
       zeroline: false,
@@ -95,7 +95,7 @@ export function buildHeatmapFigure(
       tickfont: {
         family: 'Inter',
         size: params.colFontSize,
-        color: '#2D2A26',
+        color: '#A1A1AA',
       },
       showticklabels: params.showColNames,
       automargin: true,
@@ -107,7 +107,7 @@ export function buildHeatmapFigure(
       tickfont: {
         family: 'Inter',
         size: params.rowFontSize,
-        color: '#2D2A26',
+        color: '#A1A1AA',
       },
       showticklabels: params.showRowNames,
       automargin: true,

@@ -1,7 +1,5 @@
 import { useState } from 'react'
 import { Upload, ArrowLeft, LayoutGrid, Share2 } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
-import { ExampleDatasetCard } from '@/components/ExampleDatasetCard'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { exampleDatasets } from '@/data/examples'
 import { loadExcelFromUpload } from '@/services/fileLoader'
@@ -23,77 +21,32 @@ const FEATURES: {
   title: string
   subtitle: string
   description: string
+  tags: string[]
   icon: typeof LayoutGrid
 }[] = [
   {
     id: 'heatmap',
-    title: '热图制作',
-    subtitle: 'Heatmap',
+    title: 'HEATMAP',
+    subtitle: '热图制作',
     description: '上传基因表达或丰度矩阵，生成带聚类的发表级热图，支持 Z-score 标准化。',
+    tags: ['Z-SCORE', 'CLUSTER', 'EXPORT'],
     icon: LayoutGrid,
   },
   {
     id: 'network',
-    title: '共现网络图',
-    subtitle: 'Co-occurrence Network',
-    description: '上传 OTU / ASV 丰度表，自动计算 Spearman 相关性，生成力导向共现网络。',
+    title: 'NETWORK',
+    subtitle: '共现网络图',
+    description: '上传 OTU/ASV 丰度表，自动计算 Spearman 相关性，生成力导向共现网络。',
+    tags: ['SPEARMAN', 'D3-FORCE', 'PHYLUM'],
     icon: Share2,
   },
 ]
 
-// Decorative SVG patterns shown in card corners
-function HeatmapPattern() {
-  const cells = []
-  for (let i = 0; i < 5; i++) {
-    for (let j = 0; j < 5; j++) {
-      const opacity = 0.3 + ((i + j) % 3) * 0.25
-      cells.push(
-        <rect
-          key={`${i}-${j}`}
-          x={i * 14}
-          y={j * 14}
-          width={11}
-          height={11}
-          rx={1.5}
-          fill="currentColor"
-          opacity={opacity}
-        />,
-      )
-    }
-  }
-  return (
-    <svg
-      viewBox="0 0 80 80"
-      className="absolute top-5 right-5 w-20 h-20 text-ink opacity-[0.07] group-hover:opacity-[0.12] transition-opacity pointer-events-none"
-    >
-      {cells}
-    </svg>
-  )
-}
-
-function NetworkPattern() {
-  return (
-    <svg
-      viewBox="0 0 80 80"
-      className="absolute top-5 right-5 w-20 h-20 text-ink opacity-[0.08] group-hover:opacity-[0.14] transition-opacity pointer-events-none"
-    >
-      <g stroke="currentColor" strokeWidth={1} fill="none">
-        <line x1={15} y1={15} x2={40} y2={40} />
-        <line x1={65} y1={15} x2={40} y2={40} />
-        <line x1={15} y1={65} x2={40} y2={40} />
-        <line x1={65} y1={65} x2={40} y2={40} />
-        <line x1={15} y1={15} x2={65} y2={15} />
-        <line x1={15} y1={65} x2={65} y2={65} />
-      </g>
-      <g fill="currentColor">
-        <circle cx={15} cy={15} r={3.5} />
-        <circle cx={65} cy={15} r={3.5} />
-        <circle cx={15} cy={65} r={3.5} />
-        <circle cx={65} cy={65} r={3.5} />
-        <circle cx={40} cy={40} r={5} />
-      </g>
-    </svg>
-  )
+// Subtle dot grid background pattern
+const DOT_GRID = {
+  backgroundImage:
+    'radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)',
+  backgroundSize: '24px 24px',
 }
 
 export function WelcomeScreen({ onLoaded }: WelcomeScreenProps) {
@@ -138,92 +91,110 @@ export function WelcomeScreen({ onLoaded }: WelcomeScreenProps) {
     ? exampleDatasets.filter((d) => d.feature === activeFeature)
     : []
 
-  const bgStyle = {
-    background:
-      'radial-gradient(ellipse 80% 50% at top right, rgba(204,120,92,0.06) 0%, transparent 60%),' +
-      'radial-gradient(ellipse 60% 50% at bottom left, rgba(204,120,92,0.04) 0%, transparent 55%),' +
-      '#FAF9F5',
-  }
-
   // ── Feature selection ──────────────────────────────────────────────────
   if (phase === 'select') {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center px-10 py-16 relative overflow-hidden"
-        style={bgStyle}
-      >
-        <div className="w-full max-w-2xl relative">
-          <div className="text-center space-y-4 mb-14">
-            <div className="inline-flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-terracotta" />
-              <span className="text-[11px] uppercase tracking-[0.2em] text-ink-subtle font-medium">
-                Bio Analysis Toolkit
-              </span>
-              <span className="h-1.5 w-1.5 rounded-full bg-terracotta" />
+      <div className="min-h-screen bg-[#0A0A0A] text-zinc-100 relative">
+        <div className="absolute inset-0 pointer-events-none" style={DOT_GRID} />
+
+        {/* Top status bar */}
+        <div className="border-b border-zinc-800/80 px-6 py-3 flex items-center justify-between font-mono text-[11px] uppercase tracking-wider text-zinc-500 relative">
+          <div className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse" />
+            <span>BinTools v0.0.1</span>
+            <span className="text-zinc-700">·</span>
+            <span>Local Runtime</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-zinc-600">[ OFFLINE ]</span>
+            <span className="text-zinc-600">[ NO TELEMETRY ]</span>
+          </div>
+        </div>
+
+        {/* Main hero */}
+        <div className="px-10 py-20 max-w-3xl mx-auto relative">
+          <div className="mb-16">
+            <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-zinc-500 mb-5">
+              [ BIO ANALYSIS TOOLKIT ]
             </div>
-            <h1 className="font-serif text-display text-ink">BinTools</h1>
-            <p className="text-base text-ink-muted max-w-sm mx-auto leading-relaxed">
-              面向实验室科研人员的生物分析可视化工具
+            <h1 className="font-mono text-7xl font-medium tracking-tight text-zinc-100 leading-none">
+              BinTools<span className="text-orange-500">.</span>
+            </h1>
+            <p className="mt-6 max-w-md text-sm text-zinc-400 leading-relaxed">
+              面向实验室科研人员的生物分析可视化工具。
+              <br />
+              选择一个模块开始：
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-5">
-            {FEATURES.map((f) => {
+          {/* Feature cards */}
+          <div className="grid grid-cols-2 gap-4">
+            {FEATURES.map((f, idx) => {
               const Icon = f.icon
               return (
                 <button
                   key={f.id}
                   onClick={() => setPhase(f.id)}
                   className={cn(
-                    'group text-left rounded-2xl border border-line bg-cream-50 p-7 relative overflow-hidden',
-                    'hover:border-terracotta/40 hover:-translate-y-0.5',
-                    'hover:shadow-[0_16px_40px_-16px_rgba(204,120,92,0.25)]',
-                    'transition-all duration-200',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta/40',
+                    'group relative text-left',
+                    'border border-zinc-800 bg-zinc-950/60',
+                    'p-6 transition-all duration-200',
+                    'hover:border-orange-500/50 hover:bg-zinc-900/60',
+                    'hover:shadow-[0_0_40px_-10px_rgba(255,107,53,0.25)]',
+                    'focus-visible:outline-none focus-visible:border-orange-500',
                   )}
                 >
-                  {f.id === 'heatmap' ? <HeatmapPattern /> : <NetworkPattern />}
+                  {/* Card header line */}
+                  <div className="flex items-center justify-between mb-8 pb-3 border-b border-zinc-800 group-hover:border-orange-500/30 transition-colors">
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 group-hover:text-orange-500/80 transition-colors">
+                      [ MODULE.{String(idx + 1).padStart(2, '0')} ]
+                    </span>
+                    <Icon className="h-4 w-4 text-zinc-600 group-hover:text-orange-500 transition-colors" strokeWidth={1.5} />
+                  </div>
 
-                  <div className="relative">
-                    <div className="mb-5">
-                      <div
-                        className={cn(
-                          'inline-flex items-center justify-center w-12 h-12 rounded-2xl',
-                          'bg-gradient-to-br from-terracotta/15 to-terracotta/5',
-                          'ring-1 ring-terracotta/20',
-                          'group-hover:from-terracotta/25 group-hover:to-terracotta/10',
-                          'group-hover:ring-terracotta/35',
-                          'transition-all duration-200',
-                        )}
+                  <h2 className="font-mono text-2xl font-medium text-zinc-100 mb-1 tracking-tight">
+                    {f.title}
+                  </h2>
+                  <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-500 mb-5">
+                    {f.subtitle}
+                  </p>
+
+                  <p className="text-sm text-zinc-400 leading-relaxed mb-8 min-h-[60px]">
+                    {f.description}
+                  </p>
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-1.5 mb-6">
+                    {f.tags.map((t) => (
+                      <span
+                        key={t}
+                        className="font-mono text-[10px] px-1.5 py-0.5 border border-zinc-800 text-zinc-500 group-hover:border-zinc-700 group-hover:text-zinc-400 transition-colors"
                       >
-                        <Icon className="h-6 w-6 text-terracotta" strokeWidth={1.5} />
-                      </div>
-                    </div>
-                    <h2 className="font-serif text-xl text-ink mb-0.5">{f.title}</h2>
-                    <p className="text-[11px] text-ink-subtle uppercase tracking-wider mb-4">
-                      {f.subtitle}
-                    </p>
-                    <p className="text-sm text-ink-muted leading-relaxed">
-                      {f.description}
-                    </p>
-                    <p
-                      className={cn(
-                        'mt-6 text-sm font-medium text-terracotta',
-                        'inline-flex items-center gap-1',
-                        'transition-transform duration-200 group-hover:translate-x-1',
-                      )}
-                    >
-                      进入 <span aria-hidden>→</span>
-                    </p>
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Enter line */}
+                  <div className="flex items-center justify-between pt-4 border-t border-zinc-800 group-hover:border-orange-500/30 transition-colors">
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-600">
+                      READY
+                    </span>
+                    <span className="font-mono text-xs text-orange-500 inline-flex items-center gap-2 group-hover:gap-3 transition-all">
+                      ENTER
+                      <span aria-hidden>→</span>
+                    </span>
                   </div>
                 </button>
               )
             })}
           </div>
 
-          <p className="mt-16 text-center text-xs text-ink-subtle">
-            数据全程留在本地 · 离线运行
-          </p>
+          {/* Footer */}
+          <div className="mt-20 font-mono text-[10px] uppercase tracking-widest text-zinc-700 flex items-center gap-2">
+            <span className="h-px w-8 bg-zinc-800" />
+            <span>SYSTEM READY · STANDING BY</span>
+          </div>
         </div>
       </div>
     )
@@ -232,64 +203,110 @@ export function WelcomeScreen({ onLoaded }: WelcomeScreenProps) {
   // ── Data loading ───────────────────────────────────────────────────────
   const currentFeature = FEATURES.find((f) => f.id === phase)!
   const Icon = currentFeature.icon
+
   return (
-    <div
-      className="min-h-screen flex items-center justify-center px-10 py-16 relative overflow-hidden"
-      style={bgStyle}
-    >
-      <div className="w-full max-w-2xl">
+    <div className="min-h-screen bg-[#0A0A0A] text-zinc-100 relative">
+      <div className="absolute inset-0 pointer-events-none" style={DOT_GRID} />
+
+      {/* Top status bar */}
+      <div className="border-b border-zinc-800/80 px-6 py-3 flex items-center justify-between font-mono text-[11px] uppercase tracking-wider text-zinc-500 relative">
         <button
           onClick={() => setPhase('select')}
-          className="flex items-center gap-1.5 text-sm text-ink-muted hover:text-ink mb-10 transition-colors group"
+          className="group flex items-center gap-2 text-zinc-500 hover:text-orange-500 transition-colors"
         >
-          <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
-          返回
+          <ArrowLeft className="h-3 w-3 transition-transform group-hover:-translate-x-0.5" strokeWidth={2} />
+          [ BACK ]
         </button>
+        <div className="flex items-center gap-2">
+          <span className="text-zinc-600">MODULE</span>
+          <span className="text-orange-500">{currentFeature.title}</span>
+        </div>
+      </div>
 
-        <div className="mb-10 flex items-start gap-4">
-          <div
-            className={cn(
-              'shrink-0 inline-flex items-center justify-center w-12 h-12 rounded-2xl',
-              'bg-gradient-to-br from-terracotta/15 to-terracotta/5 ring-1 ring-terracotta/20',
-            )}
-          >
-            <Icon className="h-6 w-6 text-terracotta" strokeWidth={1.5} />
+      <div className="px-10 py-20 max-w-3xl mx-auto relative">
+        {/* Header */}
+        <div className="mb-12 flex items-start gap-5">
+          <div className="shrink-0 inline-flex items-center justify-center w-12 h-12 border border-orange-500/30 bg-orange-500/5">
+            <Icon className="h-5 w-5 text-orange-500" strokeWidth={1.5} />
           </div>
           <div>
-            <p className="text-[11px] uppercase tracking-[0.2em] text-ink-subtle font-medium mb-1">
-              {currentFeature.subtitle}
-            </p>
-            <h1 className="font-serif text-display text-ink leading-none">
+            <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-zinc-500 mb-2">
+              [ {currentFeature.subtitle.toUpperCase()} ]
+            </div>
+            <h1 className="font-mono text-5xl font-medium tracking-tight text-zinc-100 leading-none">
               {currentFeature.title}
+              <span className="text-orange-500">.</span>
             </h1>
-            <p className="mt-3 text-base text-ink-muted leading-relaxed">
+            <p className="mt-4 text-sm text-zinc-400 leading-relaxed max-w-md">
               {currentFeature.description}
             </p>
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-3 mb-14">
-          <Button size="lg" onClick={handleUpload} disabled={loading}>
+        {/* Upload section */}
+        <div className="border border-zinc-800 bg-zinc-950/60 p-8 mb-8">
+          <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-5">
+            [ INPUT.SOURCE ]
+          </div>
+          <button
+            onClick={handleUpload}
+            disabled={loading}
+            className={cn(
+              'group w-full flex items-center justify-center gap-3',
+              'h-12 px-6 font-mono text-sm font-medium',
+              'border border-orange-500/50 bg-orange-500/10 text-orange-500',
+              'hover:bg-orange-500/20 hover:border-orange-500',
+              'transition-colors',
+              'disabled:opacity-50 disabled:cursor-not-allowed',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/40',
+            )}
+          >
             <Upload className="h-4 w-4" strokeWidth={2} />
-            {loading ? '正在读取…' : '上传 Excel'}
-          </Button>
+            <span className="uppercase tracking-wider">
+              {loading ? 'PARSING…' : 'UPLOAD EXCEL'}
+            </span>
+          </button>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-line" />
-            <p className="text-xs text-ink-subtle uppercase tracking-wider">
-              或试试示例数据
-            </p>
-            <div className="flex-1 h-px bg-line" />
+        {/* Examples */}
+        <div className="border border-zinc-800 bg-zinc-950/60 p-8">
+          <div className="flex items-center justify-between mb-5">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">
+              [ EXAMPLES ]
+            </div>
+            <div className="font-mono text-[10px] text-zinc-700">
+              {featureExamples.length} AVAILABLE
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            {featureExamples.map((ds) => (
-              <ExampleDatasetCard
+          <div className="grid grid-cols-1 gap-2">
+            {featureExamples.map((ds, idx) => (
+              <button
                 key={ds.id}
-                dataset={ds}
                 onClick={() => proceed(ds.data, activeFeature!)}
-              />
+                className={cn(
+                  'group flex items-center justify-between',
+                  'border border-zinc-800 bg-zinc-950 px-5 py-4',
+                  'hover:border-orange-500/40 hover:bg-zinc-900',
+                  'transition-colors text-left',
+                )}
+              >
+                <div className="flex items-center gap-4 flex-1 min-w-0">
+                  <span className="font-mono text-[10px] text-zinc-600 group-hover:text-orange-500/70 transition-colors shrink-0">
+                    {String(idx + 1).padStart(2, '0')}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="font-mono text-sm text-zinc-100 group-hover:text-orange-400 transition-colors">
+                      {ds.title}
+                    </div>
+                    <div className="text-xs text-zinc-500 mt-0.5">
+                      {ds.description}
+                    </div>
+                  </div>
+                </div>
+                <div className="font-mono text-[10px] uppercase tracking-wider text-zinc-600 shrink-0 ml-4">
+                  {ds.shape}
+                </div>
+              </button>
             ))}
           </div>
         </div>

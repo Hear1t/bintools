@@ -126,7 +126,7 @@ export function NetworkCanvas({ networkSvgRef }: NetworkCanvasProps) {
       .join('circle')
       .attr('r', nodeRadius)
       .attr('fill', d => d.phylumColor)
-      .attr('stroke', '#fff')
+      .attr('stroke', '#0A0A0A')
       .attr('stroke-width', 1.5)
       .style('cursor', 'grab')
       .on('mouseover', (event: MouseEvent, d) => {
@@ -160,7 +160,7 @@ export function NetworkCanvas({ networkSvgRef }: NetworkCanvasProps) {
           .text(d => (d.label.length > 18 ? d.label.slice(0, 18) + '…' : d.label))
           .attr('font-size', 9)
           .attr('font-family', 'Inter, sans-serif')
-          .attr('fill', '#2D2A26')
+          .attr('fill', '#A1A1AA')
           .attr('text-anchor', 'middle')
           .attr('dy', d => nodeRadius(d) + 11)
       : null
@@ -208,12 +208,12 @@ export function NetworkCanvas({ networkSvgRef }: NetworkCanvasProps) {
     <div
       ref={containerRef}
       className="relative flex-1 overflow-hidden"
-      style={{ background: '#FAF9F5' }}
+      style={{ background: '#0A0A0A' }}
     >
       <svg
         ref={svgRef}
         className="w-full h-full"
-        style={{ background: '#FAF9F5' }}
+        style={{ background: '#0A0A0A' }}
       />
 
       {/* Empty state */}
