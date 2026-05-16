@@ -4,7 +4,7 @@ import { ThemeToggle } from '@/components/ThemeToggle'
 import { Logo } from '@/components/Logo'
 import { cn } from '@/lib/cn'
 
-type ActiveTab = 'heatmap' | 'network'
+type ActiveTab = 'heatmap' | 'network' | 'phylo'
 
 interface TopBarProps {
   getPlotElement: () => HTMLElement | null
@@ -15,6 +15,7 @@ interface TopBarProps {
 const TAB_LABEL: Record<ActiveTab, string> = {
   heatmap: 'HEATMAP',
   network: 'NETWORK',
+  phylo: 'PHYLO',
 }
 
 export function TopBar({ getPlotElement, activeTab, onBackHome }: TopBarProps) {

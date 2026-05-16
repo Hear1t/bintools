@@ -4,6 +4,12 @@ export interface OpenedExcelFile {
   bytes: Uint8Array
 }
 
+export interface OpenedFastaFile {
+  name: string
+  path: string
+  content: string
+}
+
 export interface SaveDialogArgs {
   defaultName: string
   filterName: string
@@ -17,6 +23,7 @@ export interface WriteFileArgs {
 
 export interface BinToolsApi {
   openExcelFile: () => Promise<OpenedExcelFile | null>
+  openFastaFile: () => Promise<OpenedFastaFile | null>
   showSaveDialog: (args: SaveDialogArgs) => Promise<string | null>
   writeFile: (args: WriteFileArgs) => Promise<{ ok: boolean; error?: string }>
 }

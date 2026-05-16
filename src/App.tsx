@@ -5,15 +5,17 @@ import { MainLayout } from '@/components/MainLayout'
 import { Toaster } from '@/components/Toaster'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { useAppStore } from '@/store/appStore'
+import { usePhyloStore } from '@/store/phyloStore'
 import { useApplyTheme } from '@/hooks/useApplyTheme'
 import type { ParsedFile } from '@/types/sheet'
 import type { ValidationResult } from '@/types/data'
 
-type Feature = 'heatmap' | 'network'
+type Feature = 'heatmap' | 'network' | 'phylo'
+type ExcelFeature = 'heatmap' | 'network'
 
 type View =
   | { type: 'welcome' }
-  | { type: 'preview'; file: ParsedFile; sheetIndex: number; feature: Feature }
+  | { type: 'preview'; file: ParsedFile; sheetIndex: number; feature: ExcelFeature }
   | { type: 'main'; feature: Feature }
 
 export default function App() {
@@ -21,9 +23,11 @@ export default function App() {
   const [view, setView] = useState<View>({ type: 'welcome' })
   const setDataset = useAppStore((s) => s.setDataset)
   const clearDataset = useAppStore((s) => s.clearDataset)
+  const clearPhylo = usePhyloStore((s) => s.clear)
 
-  const reupload = () => {
+  const goHome = () => {
     clearDataset()
+    clearPhylo()
     setView({ type: 'welcome' })
   }
 
@@ -31,9 +35,10 @@ export default function App() {
   if (view.type === 'welcome') {
     content = (
       <WelcomeScreen
-        onLoaded={(file, feature) =>
+        onLoadedExcel={(file, feature) =>
           setView({ type: 'preview', file, sheetIndex: 0, feature })
         }
+        onLoadedPhylo={() => setView({ type: 'main', feature: 'phylo' })}
       />
     )
   } else if (view.type === 'preview') {
@@ -50,7 +55,7 @@ export default function App() {
       />
     )
   } else {
-    content = <MainLayout onReupload={reupload} initialTab={view.feature} />
+    content = <MainLayout onReupload={goHome} initialTab={view.feature} />
   }
 
   return (

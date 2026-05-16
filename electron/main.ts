@@ -50,6 +50,26 @@ ipcMain.handle('dialog:openExcel', async () => {
   }
 })
 
+ipcMain.handle('dialog:openFasta', async () => {
+  if (!mainWindow) return null
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: '选择 FASTA 文件',
+    properties: ['openFile'],
+    filters: [
+      { name: 'FASTA 序列', extensions: ['fasta', 'fa', 'fna', 'ffn', 'faa', 'frn', 'txt'] },
+      { name: '所有文件', extensions: ['*'] },
+    ],
+  })
+  if (result.canceled || result.filePaths.length === 0) return null
+  const filePath = result.filePaths[0]
+  const buffer = await readFile(filePath, 'utf8')
+  return {
+    name: path.basename(filePath),
+    path: filePath,
+    content: buffer,
+  }
+})
+
 interface SaveDialogArgs {
   defaultName: string
   filterName: string

@@ -6,9 +6,17 @@ export interface OpenedExcelFile {
   bytes: Uint8Array
 }
 
+export interface OpenedFastaFile {
+  name: string
+  path: string
+  content: string
+}
+
 const api = {
   openExcelFile: (): Promise<OpenedExcelFile | null> =>
     ipcRenderer.invoke('dialog:openExcel'),
+  openFastaFile: (): Promise<OpenedFastaFile | null> =>
+    ipcRenderer.invoke('dialog:openFasta'),
   showSaveDialog: (args: {
     defaultName: string
     filterName: string

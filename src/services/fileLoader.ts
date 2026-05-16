@@ -1,10 +1,21 @@
 import * as XLSX from 'xlsx'
 import type { ParsedFile, RawSheet } from '@/types/sheet'
 
+export interface LoadedFasta {
+  fileName: string
+  content: string
+}
+
 export async function loadExcelFromUpload(): Promise<ParsedFile | null> {
   const file = await window.api.openExcelFile()
   if (!file) return null
   return parseExcelBytes(file.bytes, file.name)
+}
+
+export async function loadFastaFromUpload(): Promise<LoadedFasta | null> {
+  const file = await window.api.openFastaFile()
+  if (!file) return null
+  return { fileName: file.name, content: file.content }
 }
 
 export function parseExcelBytes(bytes: Uint8Array, fileName: string): ParsedFile {
