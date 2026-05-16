@@ -4,27 +4,25 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Backgrounds (was cream/warm) → now dark surfaces
         cream: {
-          DEFAULT: '#0A0A0A',
-          50: '#141414',
-          100: '#0F0F0F',
-          200: '#1F1F1F',
-          300: '#2A2A2A',
+          DEFAULT: 'rgb(var(--cream) / <alpha-value>)',
+          50: 'rgb(var(--cream-50) / <alpha-value>)',
+          100: 'rgb(var(--cream-100) / <alpha-value>)',
+          200: 'rgb(var(--cream-200) / <alpha-value>)',
+          300: 'rgb(var(--cream-300) / <alpha-value>)',
         },
-        // Text (was warm dark) → now light
         ink: {
-          DEFAULT: '#FAFAFA',
-          muted: '#A1A1AA',
-          subtle: '#71717A',
+          DEFAULT: 'rgb(var(--ink) / <alpha-value>)',
+          muted: 'rgb(var(--ink-muted) / <alpha-value>)',
+          subtle: 'rgb(var(--ink-subtle) / <alpha-value>)',
+          faint: 'rgb(var(--ink-faint) / <alpha-value>)',
         },
-        // Accent (was terracotta) → now vibrant orange
         terracotta: {
-          DEFAULT: '#F97316',
-          hover: '#FB923C',
-          subtle: 'rgba(249,115,22,0.15)',
+          DEFAULT: 'rgb(var(--terracotta) / <alpha-value>)',
+          hover: 'rgb(var(--terracotta-hover) / <alpha-value>)',
+          subtle: 'rgb(var(--terracotta-subtle) / <alpha-value>)',
         },
-        line: '#27272A',
+        line: 'rgb(var(--line) / <alpha-value>)',
       },
       fontFamily: {
         serif: ['"Source Serif 4"', 'Georgia', 'serif'],

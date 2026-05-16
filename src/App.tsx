@@ -5,6 +5,7 @@ import { MainLayout } from '@/components/MainLayout'
 import { Toaster } from '@/components/Toaster'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { useAppStore } from '@/store/appStore'
+import { useApplyTheme } from '@/hooks/useApplyTheme'
 import type { ParsedFile } from '@/types/sheet'
 import type { ValidationResult } from '@/types/data'
 
@@ -16,6 +17,7 @@ type View =
   | { type: 'main'; feature: Feature }
 
 export default function App() {
+  useApplyTheme()
   const [view, setView] = useState<View>({ type: 'welcome' })
   const setDataset = useAppStore((s) => s.setDataset)
   const clearDataset = useAppStore((s) => s.clearDataset)

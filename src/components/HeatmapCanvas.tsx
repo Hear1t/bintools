@@ -2,6 +2,7 @@ import { useEffect, type RefObject } from 'react'
 import Plotly from 'plotly.js-dist-min'
 import { useProcessedData } from '@/hooks/useProcessedData'
 import { useAppStore } from '@/store/appStore'
+import { useThemeStore } from '@/store/themeStore'
 import { buildHeatmapFigure } from '@/services/plotlyConfig'
 
 interface HeatmapCanvasProps {
@@ -11,18 +12,19 @@ interface HeatmapCanvasProps {
 export function HeatmapCanvas({ plotRef }: HeatmapCanvasProps) {
   const processed = useProcessedData()
   const params = useAppStore((s) => s.params)
+  const theme = useThemeStore((s) => s.theme)
 
   useEffect(() => {
     const el = plotRef.current
     if (!el || !processed) return
 
-    const figure = buildHeatmapFigure(processed, params)
+    const figure = buildHeatmapFigure(processed, params, theme)
     Plotly.react(el, figure.data as any, figure.layout as any, figure.config as any)
 
     return () => {
       Plotly.purge(el)
     }
-  }, [processed, params, plotRef])
+  }, [processed, params, theme, plotRef])
 
   useEffect(() => {
     if (!params.fitWindow) return

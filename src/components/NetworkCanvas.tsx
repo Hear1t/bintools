@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, type RefObject } from 'react'
 import * as d3 from 'd3'
 import { useNetworkData } from '@/hooks/useNetworkData'
 import { useNetworkStore } from '@/store/networkStore'
+import { useThemeStore } from '@/store/themeStore'
+import { getThemeColors } from '@/lib/themeColors'
 import { getPhylumColor } from '@/services/networkBuilder'
 import type { NetworkNode } from '@/types/network'
 
@@ -34,6 +36,8 @@ export function NetworkCanvas({ networkSvgRef }: NetworkCanvasProps) {
   const [tooltip, setTooltip] = useState<TooltipState | null>(null)
   const networkData = useNetworkData()
   const params = useNetworkStore((s) => s.params)
+  const theme = useThemeStore((s) => s.theme)
+  const themeColors = getThemeColors(theme)
 
   // Sync external ref so parent can access for export
   useEffect(() => {
@@ -126,7 +130,7 @@ export function NetworkCanvas({ networkSvgRef }: NetworkCanvasProps) {
       .join('circle')
       .attr('r', nodeRadius)
       .attr('fill', d => d.phylumColor)
-      .attr('stroke', '#0A0A0A')
+      .attr('stroke', themeColors.nodeStroke)
       .attr('stroke-width', 1.5)
       .style('cursor', 'grab')
       .on('mouseover', (event: MouseEvent, d) => {
@@ -160,7 +164,7 @@ export function NetworkCanvas({ networkSvgRef }: NetworkCanvasProps) {
           .text(d => (d.label.length > 18 ? d.label.slice(0, 18) + '…' : d.label))
           .attr('font-size', 9)
           .attr('font-family', 'Inter, sans-serif')
-          .attr('fill', '#A1A1AA')
+          .attr('fill', themeColors.textMuted)
           .attr('text-anchor', 'middle')
           .attr('dy', d => nodeRadius(d) + 11)
       : null
@@ -188,7 +192,7 @@ export function NetworkCanvas({ networkSvgRef }: NetworkCanvasProps) {
     })
 
     return () => { simulation.stop() }
-  }, [networkData, params])
+  }, [networkData, params, theme])
 
   const data = networkData
   const uniquePhyla = data
@@ -208,12 +212,12 @@ export function NetworkCanvas({ networkSvgRef }: NetworkCanvasProps) {
     <div
       ref={containerRef}
       className="relative flex-1 overflow-hidden"
-      style={{ background: '#0A0A0A' }}
+      style={{ background: themeColors.bg }}
     >
       <svg
         ref={svgRef}
         className="w-full h-full"
-        style={{ background: '#0A0A0A' }}
+        style={{ background: themeColors.bg }}
       />
 
       {/* Empty state */}

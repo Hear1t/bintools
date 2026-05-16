@@ -1,6 +1,8 @@
 import type { ProcessedDataset } from '@/types/processed'
 import type { HeatmapParams } from '@/types/params'
+import type { Theme } from '@/store/themeStore'
 import { colorScales } from '@/data/colorSchemes'
+import { getThemeColors } from '@/lib/themeColors'
 
 export interface PlotlyFigure {
   data: unknown[]
@@ -40,7 +42,9 @@ function computeRange(matrix: number[][]): { min: number; max: number } {
 export function buildHeatmapFigure(
   processed: ProcessedDataset,
   params: HeatmapParams,
+  theme: Theme = 'dark',
 ): PlotlyFigure {
+  const c = getThemeColors(theme)
   const orderedMatrix = reorderMatrix(
     processed.matrix,
     processed.rowOrder,
@@ -75,7 +79,7 @@ export function buildHeatmapFigure(
         thickness: 12,
         len: 0.7,
         outlinewidth: 0,
-        tickfont: { family: 'Inter', size: 10, color: '#71717A' },
+        tickfont: { family: 'Inter', size: 10, color: c.textSubtle },
       },
     },
   ]
@@ -85,9 +89,9 @@ export function buildHeatmapFigure(
     width: params.fitWindow ? undefined : params.width,
     height: params.fitWindow ? undefined : params.height,
     margin: { l: 90, r: 60, t: 30, b: 90 },
-    paper_bgcolor: '#0A0A0A',
-    plot_bgcolor: '#0A0A0A',
-    font: { family: 'Inter', color: '#A1A1AA' },
+    paper_bgcolor: c.bg,
+    plot_bgcolor: c.bg,
+    font: { family: 'Inter', color: c.textMuted },
     xaxis: {
       showgrid: false,
       zeroline: false,
@@ -95,7 +99,7 @@ export function buildHeatmapFigure(
       tickfont: {
         family: 'Inter',
         size: params.colFontSize,
-        color: '#A1A1AA',
+        color: c.textMuted,
       },
       showticklabels: params.showColNames,
       automargin: true,
@@ -107,7 +111,7 @@ export function buildHeatmapFigure(
       tickfont: {
         family: 'Inter',
         size: params.rowFontSize,
-        color: '#A1A1AA',
+        color: c.textMuted,
       },
       showticklabels: params.showRowNames,
       automargin: true,
