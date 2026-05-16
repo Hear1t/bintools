@@ -2,26 +2,47 @@ import { useState } from 'react'
 import { Upload } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { ExampleDatasetCard } from '@/components/ExampleDatasetCard'
+import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { exampleDatasets } from '@/data/examples'
 import { loadExcelFromUpload } from '@/services/fileLoader'
+import { useUiStore } from '@/store/uiStore'
 import type { ParsedFile } from '@/types/sheet'
 
 interface WelcomeScreenProps {
   onLoaded: (file: ParsedFile) => void
 }
 
+const LARGE_ROW_THRESHOLD = 5000
+const LARGE_COL_THRESHOLD = 50
+
 export function WelcomeScreen({ onLoaded }: WelcomeScreenProps) {
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [pendingLarge, setPendingLarge] = useState<{
+    file: ParsedFile
+    rowCount: number
+    colCount: number
+  } | null>(null)
+  const showToast = useUiStore((s) => s.showToast)
+
+  const proceedWith = (file: ParsedFile) => {
+    const first = file.sheets[0]
+    const rowCount = first?.rows.length ?? 0
+    const colCount = first?.rows[0]?.length ?? 0
+    if (rowCount > LARGE_ROW_THRESHOLD || colCount > LARGE_COL_THRESHOLD) {
+      setPendingLarge({ file, rowCount, colCount })
+      return
+    }
+    onLoaded(file)
+  }
 
   const handleUpload = async () => {
-    setError(null)
     setLoading(true)
     try {
       const file = await loadExcelFromUpload()
-      if (file) onLoaded(file)
+      if (file) proceedWith(file)
     } catch (e) {
-      setError(e instanceof Error ? e.message : '解析失败，请检查文件')
+      const msg = e instanceof Error ? e.message : '解析失败，请检查文件'
+      showToast('error', `文件解析失败：${msg}`)
     } finally {
       setLoading(false)
     }
@@ -45,9 +66,6 @@ export function WelcomeScreen({ onLoaded }: WelcomeScreenProps) {
             <Upload className="h-4 w-4" strokeWidth={2} />
             {loading ? '正在读取…' : '上传 Excel'}
           </Button>
-          {error && (
-            <p className="text-sm text-red-600">{error}</p>
-          )}
         </div>
 
         <div className="space-y-4">
@@ -59,12 +77,34 @@ export function WelcomeScreen({ onLoaded }: WelcomeScreenProps) {
               <ExampleDatasetCard
                 key={ds.id}
                 dataset={ds}
-                onClick={() => onLoaded(ds.data)}
+                onClick={() => proceedWith(ds.data)}
               />
             ))}
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={pendingLarge !== null}
+        onOpenChange={(open) => !open && setPendingLarge(null)}
+        title="数据较大"
+        description={
+          pendingLarge && (
+            <>
+              这份数据有 <strong>{pendingLarge.rowCount}</strong> 行 ×{' '}
+              <strong>{pendingLarge.colCount}</strong> 列，
+              渲染可能需要 10-30 秒。是否继续？
+            </>
+          )
+        }
+        confirmLabel="继续渲染"
+        onConfirm={() => {
+          if (pendingLarge) {
+            onLoaded(pendingLarge.file)
+            setPendingLarge(null)
+          }
+        }}
+      />
     </div>
   )
 }

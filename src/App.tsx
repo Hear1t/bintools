@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { WelcomeScreen } from '@/components/WelcomeScreen'
 import { DataPreview } from '@/components/DataPreview'
 import { MainLayout } from '@/components/MainLayout'
+import { Toaster } from '@/components/Toaster'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { useAppStore } from '@/store/appStore'
 import type { ParsedFile } from '@/types/sheet'
 import type { ValidationResult } from '@/types/data'
@@ -21,18 +23,17 @@ export default function App() {
     setView({ type: 'welcome' })
   }
 
+  let content
   if (view.type === 'welcome') {
-    return (
+    content = (
       <WelcomeScreen
         onLoaded={(file) =>
           setView({ type: 'preview', file, sheetIndex: 0 })
         }
       />
     )
-  }
-
-  if (view.type === 'preview') {
-    return (
+  } else if (view.type === 'preview') {
+    content = (
       <DataPreview
         file={view.file}
         currentSheet={view.sheetIndex}
@@ -44,7 +45,14 @@ export default function App() {
         onCancel={() => setView({ type: 'welcome' })}
       />
     )
+  } else {
+    content = <MainLayout onReupload={reupload} />
   }
 
-  return <MainLayout onReupload={reupload} />
+  return (
+    <ErrorBoundary>
+      {content}
+      <Toaster />
+    </ErrorBoundary>
+  )
 }
