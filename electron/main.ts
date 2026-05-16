@@ -1,5 +1,6 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import path from 'node:path'
+import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -31,6 +32,25 @@ function createWindow() {
     mainWindow.loadFile(path.join(RENDERER_DIST, 'index.html'))
   }
 }
+
+ipcMain.handle('dialog:openExcel', async () => {
+  if (!mainWindow) return null
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: '选择 Excel 文件',
+    properties: ['openFile'],
+    filters: [
+      { name: 'Excel 表格', extensions: ['xlsx', 'xls'] },
+    ],
+  })
+  if (result.canceled || result.filePaths.length === 0) return null
+  const filePath = result.filePaths[0]
+  const buffer = await readFile(filePath)
+  return {
+    name: path.basename(filePath),
+    path: filePath,
+    bytes: new Uint8Array(buffer),
+  }
+})
 
 app.whenReady().then(createWindow)
 

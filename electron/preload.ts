@@ -1,3 +1,16 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 
-contextBridge.exposeInMainWorld('api', {})
+export interface OpenedExcelFile {
+  name: string
+  path: string
+  bytes: Uint8Array
+}
+
+const api = {
+  openExcelFile: (): Promise<OpenedExcelFile | null> =>
+    ipcRenderer.invoke('dialog:openExcel'),
+}
+
+contextBridge.exposeInMainWorld('api', api)
+
+export type Api = typeof api
